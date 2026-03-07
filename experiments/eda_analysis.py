@@ -55,8 +55,9 @@ def export_eda_to_text(eda_results, output_path):
         # Abnormal price changes
         f.write("1.4 Abnormal Price Change Analysis (>5% fluctuation)\n")
         f.write(f"   - Number of abnormal records: {stock_res['abnormal_records']['count']}\n")
-        f.write(f"   - Abnormal dates: {stock_res['abnormal_records']['dates']}\n\n")
-
+        f.write(f"   - Abnormal dates: {stock_res['abnormal_records']['dates']}\n")
+        f.write(f"   - Abnormal change rate: {stock_res['abnormal_records']['change_rate']}\n\n")
+        
         # 2. Fund Data Analysis
         f.write("2. DOMESTIC FUND DATA ANALYSIS (005827 - E Fund Blue Chip Selection)\n")
         f.write("-"*60 + "\n")
@@ -106,6 +107,7 @@ def eda_stock_data(df):
     Returns:
         dict: Structured EDA results
     """
+    
     # Basic info
     n_rows, n_cols = df.shape
     columns = df.columns.tolist()
@@ -123,8 +125,10 @@ def eda_stock_data(df):
     df["price_change_pct"] = df["close"].pct_change() * 100
     abnormal = df[abs(df["price_change_pct"]) > 5]
     abnormal_count = len(abnormal)
-    abnormal_dates = abnormal["trade_date"].dt.strftime("%Y-%m-%d").tolist() if not abnormal.empty else []
-
+    abnormal_dates_raw = abnormal["trade_date"].astype(str)
+    abnormal_dates = [date.split(" ")[0] for date in abnormal_dates_raw]
+    abnormal_change_rate_raw = abnormal["price_change_pct"].values
+    abnormal_change_rate = [round(float(rate),2) for rate in abnormal_change_rate_raw]
     # Return structured results
     return {
         "n_rows": n_rows,
@@ -138,7 +142,8 @@ def eda_stock_data(df):
         },
         "abnormal_records": {
             "count": abnormal_count,
-            "dates": abnormal_dates
+            "dates": abnormal_dates,
+            "change_rate":abnormal_change_rate
         }
     }
 
@@ -184,7 +189,10 @@ if __name__ == "__main__":
     try:
         # Load and preprocess stock data
         stock_df = pd.read_csv("experiments/raw_data/a_share_price.csv")
-        stock_df["trade_date"] = pd.to_datetime(stock_df["trade_date"])
+        stock_df["trade_date"] = pd.to_datetime(
+        stock_df["trade_date"].astype(str),  # Convert integer to string first 
+        format="%Y%m%d"  # (20241001 → 2024-10-01)
+        )
         
         # Load fund data (English column names)
         fund_df = pd.read_csv("experiments/raw_data/fund_nav.csv")
