@@ -1,0 +1,5 @@
+parameter,default_value,description
+fixed_investment_amount,1000.0,Default monthly fixed investment amount (RMB)
+investment_frequency,monthly,Investment frequency (monthly/weekly)
+investment_duration_years,5.0,Total fixed investment duration (years)
+expected_annual_return_rate,0.08,Expected annual return rate (8% for moderate risk)

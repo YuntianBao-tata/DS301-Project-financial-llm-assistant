@@ -1,80 +1,132 @@
 ================================================================================
-EXPLORATORY DATA ANALYSIS (EDA) RESULTS
-Project: Financial LLM Assistant (A-share + Fund Data)
-Generated on: 2026-03-07 14:28:41
+DATA ANALYSIS (EDA) RESULTS
+Project: Financial LLM Assistant
+Generated on: 2026-03-07 17:24:56
 ================================================================================
 
 1. A-SHARE STOCK DATA ANALYSIS (600519.SH - Kweichow Moutai)
 ------------------------------------------------------------
 1.1 Basic Data Information
-   - Number of rows: 242
-   - Number of columns: 11
-   - Column names: ts_code, trade_date, open, high, low, close, pre_close, change, pct_chg, vol, amount
-   - Data types: {'ts_code': 'object', 'trade_date': 'datetime64[ns]', 'open': 'float64', 'high': 'float64', 'low': 'float64', 'close': 'float64', 'pre_close': 'float64', 'change': 'float64', 'pct_chg': 'float64', 'vol': 'float64', 'amount': 'float64'}
+   - Number of rows: 22
+   - Number of columns: 18
+   - Column names: stock_code, trade_date, open_price, high_price, low_price, close_price, pre_close, change, pct_chg, trading_volume, trading_amount, price_limit_up, price_limit_down, pe_ttm, pb, total_market_value, market, stock_name
+   - Market (SH/SZ): SH
+   - Date range: 2024-01-02 to 2024-01-31
 
-1.2 Descriptive Statistics (Key Metrics)
-   OPEN:
-      - Mean: 1570.15
-      - Std: 118.19
-      - Min: 1261.50
-      - Max: 1910.00
-   HIGH:
-      - Mean: 1586.20
-      - Std: 115.84
-      - Min: 1273.90
-      - Max: 1910.00
-   LOW:
-      - Mean: 1555.17
-      - Std: 116.54
-      - Min: 1245.83
-      - Max: 1756.68
-   CLOSE:
-      - Mean: 1569.60
-      - Std: 116.15
-      - Min: 1261.00
-      - Max: 1770.00
-   VOL:
-      - Mean: 33651.53
-      - Std: 20365.18
-      - Min: 10321.04
-      - Max: 194709.47
+1.2 Key Price & Volume Metrics
+   OPEN PRICE:
+      - Mean: 1641.38
+      - Std: 29.14
+      - Min: 1574.00
+      - Max: 1715.00
+   HIGH PRICE:
+      - Mean: 1654.03
+      - Std: 24.52
+      - Min: 1612.80
+      - Max: 1718.19
+   LOW PRICE:
+      - Mean: 1626.26
+      - Std: 29.45
+      - Min: 1555.55
+      - Max: 1678.10
+   CLOSE PRICE:
+      - Mean: 1639.09
+      - Std: 25.76
+      - Min: 1577.00
+      - Max: 1694.00
+   TRADING VOLUME:
+      - Mean: 29857.92
+      - Std: 12268.61
+      - Min: 11603.24
+      - Max: 60439.81
 
-1.3 Missing Values Analysis
+1.3 Financial Indicators (PE-TTM / PB / Market Cap)
+   PE_TTM:
+      - Mean: 28.92
+      - Std: 0.45
+      - Min: 27.83
+      - Max: 29.89
+   PB:
+      - Mean: 10.62
+      - Std: 0.17
+      - Min: 10.22
+      - Max: 10.98
+   TOTAL_MARKET_VALUE:
+      - Mean: 205902353.60
+      - Std: 3236242.50
+      - Min: 198102393.06
+      - Max: 212799907.32
+
+1.4 Price Limit Analysis (Up/Down)
+   - Avg Up Limit Price: 1803.00 RMB
+   - Avg Down Limit Price: 1475.18 RMB
+   - Max Up Limit Premium: 10.00%
+
+1.5 Missing Values Analysis
    - Total missing values: 0
-   - Missing values per column: {'ts_code': 0, 'trade_date': 0, 'open': 0, 'high': 0, 'low': 0, 'close': 0, 'pre_close': 0, 'change': 0, 'pct_chg': 0, 'vol': 0, 'amount': 0}
-
-1.4 Abnormal Price Change Analysis (>5% fluctuation)
-   - Number of abnormal records: 5
-   - Abnormal dates: ['2024-10-08', '2024-09-27', '2024-09-26', '2024-09-25', '2024-09-23']
-   - Abnormal change rate: [8.01, -6.8, -6.15, -8.5, -8.09]
+   - Columns with missing values: ['None']
 
 2. DOMESTIC FUND DATA ANALYSIS (005827 - E Fund Blue Chip Selection)
 ------------------------------------------------------------
 2.1 Basic Data Information
    - Number of rows: 1794
-   - Number of columns: 3
-   - Column names: nav_date, unit_net_value, daily_increase_rate
-   - Data types: {'nav_date': 'object', 'unit_net_value': 'float64', 'daily_increase_rate': 'float64'}
+   - Number of columns: 12
+   - Column names: nav_date, unit_net_value, daily_return_rate, yield_1_week, yield_1_month, yield_1_year, yield_since_inception, fund_type, fund_manager, fund_company, establishment_date, fund_scale
+   - Fund Type: Unknown
+   - Fund Manager: Unknown
+   - Fund Company: Unknown
+   - Establishment Date: Unknown
 
-2.2 Descriptive Statistics (NAV Metrics)
+2.2 Net Asset Value (NAV) Metrics
    UNIT NET VALUE:
       - Mean: 1.9480
       - Std: 0.5079
       - Min: 0.9199
       - Max: 3.5287
-   DAILY INCREASE RATE:
-      - Mean: 0.0403
-      - Std: 1.5128
-      - Min: -9.2900
-      - Max: 7.3300
+   CUMULATIVE NET VALUE: No valid data
 
-2.3 Missing Values Analysis
-   - Total missing values: 0
-   - Missing values per column: {'nav_date': 0, 'unit_net_value': 0, 'daily_increase_rate': 0}
+2.3 Yield Analysis (Calculated from NAV)
+   - Yield 1 Week: -2.38%
+   - Yield 1 Month: -6.35%
+   - Yield 1 Year: -5.53%
+   - Yield Since Inception: 82.28%
 
-3. KEY EDA INSIGHTS
+2.4 Missing Values Analysis
+   - Total missing values: 8970
+   - Columns with missing values: ['fund_type', 'fund_manager', 'fund_company', 'establishment_date', 'fund_scale']
+
+3. CALCULATION PARAMETERS ANALYSIS
 ------------------------------------------------------------
-   - A-share data: No missing values, 2 abnormal price fluctuation records (2024-01-10, 2024-01-20)
-   - Fund data: No missing values, stable net asset value (mean: 1.5234, std: 0.0876)
-   - Trading volume of Kweichow Moutai: Mean = 192,500 lots, min = 185,000 lots, max = 205,000 lots
+3.1 A-share Transaction Costs (2024 Standard)
+   - Commission Rate: 0.0003 (Broker commission rate (0.03% of trade amount))
+   - Stamp Duty Rate: 0.001 (Stamp duty rate (0.1% for sell orders only))
+   - Transfer Fee Rate: 2e-05 (Transfer fee rate (Shanghai stock market only))
+   - Minimum Commission: 5.0 (Minimum commission per trade (RMB))
+
+3.2 Fixed Investment Default Parameters
+   - Fixed Investment Amount: 1000.0 (Default monthly fixed investment amount (RMB))
+   - Investment Frequency: monthly (Investment frequency (monthly/weekly))
+   - Investment Duration Years: 5.0 (Total fixed investment duration (years))
+   - Expected Annual Return Rate: 0.08 (Expected annual return rate (8% for moderate risk))
+
+3.3 Compound Interest Calculation Parameters
+   - Principal: 10000.0 (Initial investment principal (RMB))
+   - Annual Rate: 0.04 (Annual interest rate (4% for low-risk))
+   - Compounding Frequency: 12.0 (Compounding frequency per year (12=monthly compounding))
+   - Years: 10.0 (Total investment period (years))
+
+4. KEY EDA INSIGHTS
+------------------------------------------------------------
+   A-SHARE INSIGHTS:
+   - Kweichow Moutai (600519.SH) has stable trading volume (mean: 29858 lots)
+   - Average PE-TTM: 28.92 (reasonable for blue-chip stock)
+   - Average total market value: 205902353.60 billion RMB
+   
+   FUND INSIGHTS:
+   - E Fund Blue Chip Selection (005827) has stable NAV (mean: 1.9480)
+   - 1-month yield: -6.35% (calculated from NAV data)
+   
+   CALCULATION INSIGHTS:
+   - Standard A-share commission rate: 0.03% (minimum 5 RMB per trade)
+   - Default monthly fixed investment amount: 1000 RMB (5-year duration, 8% expected return)
 ================================================================================
