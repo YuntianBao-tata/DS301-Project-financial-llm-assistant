@@ -1,0 +1,5 @@
+cost_type,value,description,applicability
+commission_rate,0.0003,Broker commission rate (0.03% of trade amount),Buy + Sell
+stamp_duty_rate,0.001,Stamp duty rate (0.1% for sell orders only),Sell only
+transfer_fee_rate,2e-05,Transfer fee rate (Shanghai stock market only),Shanghai stocks only (Buy + Sell)
+minimum_commission,5.0,Minimum commission per trade (RMB),"All trades (if commission < 5 RMB, charge 5 RMB)"
