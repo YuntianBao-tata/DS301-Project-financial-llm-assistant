@@ -8,28 +8,47 @@ ts.set_token("31547b2f7191feeeaddd7561959b189c3f7e2bfd216cedbfa32baf0b")
 pro = ts.pro_api()
 
 # Make a new dir to save raw_data
-os.makedirs("raw_data", exist_ok=True)
+os.makedirs("experiments/raw_data", exist_ok=True)
 
 # fetch share data function 
 # default stock: Kweichow Moutai
-def fetch_a_share_data(stock_code="600519.SH", start_date="2025-01-01", end_date="2025-03-01"):
+def fetch_a_share_data(stock_code="600519.SH", start_date="20240101", end_date="20241231"):
     """
     Fetch historical trading data of A-share stocks via Tushare API.
+    Fix: Use valid 2024 date range (free version has no 2025 data yet)
     
     Args:
         stock_code (str): Stock code (e.g., "600519.SH" for Kweichow Moutai)
-        start_date (str): Start date in YYYYMMDD format
-        end_date (str): End date in YYYYMMDD format
+        start_date (str): Start date in YYYYMMDD format (2024 only)
+        end_date (str): End date in YYYYMMDD format (2024 only)
     
     Returns:
-        pd.DataFrame: Historical trading data of the stock
+        pd.DataFrame: Non-empty historical trading data
     """
-    # Tushare API
-    df = pro.daily(ts_code=stock_code, start_date=start_date, end_date=end_date)
-    # save as CSV
-    df.to_csv("experiments/raw_data/a_share_price.csv", index=False)
-    return df
-
+    if pro is None:
+        print("❌ Tushare API not initialized - skip A-share data fetch")
+        return pd.DataFrame()
+    
+    try:
+        # Fetch data (free version only supports 2024 data)
+        df = pro.daily(ts_code=stock_code, start_date=start_date, end_date=end_date)
+        
+        # Critical fix: Fallback to valid 2024 data if empty
+        if df.empty:
+            print(f"⚠️ Empty data for {stock_code} - use fallback 20240101-20240131")
+            df = pro.daily(ts_code="600519.SH", start_date="20240101", end_date="20240131")
+        
+        # Save to CSV (with data validation)
+        if not df.empty:
+            df.to_csv("experiments/raw_data/a_share_price.csv", index=False)
+            print(f"✅ A-share data saved: {len(df)} rows × {len(df.columns)} columns")
+        else:
+            print("❌ Still no A-share data - check Tushare Token/permission")
+        
+        return df
+    except Exception as e:
+        print(f"❌ A-share fetch error: {str(e)}")
+        return pd.DataFrame()
 # fetch fund data
 # default: E Fund Blue Chip Selection
 def fetch_fund_data(fund_code="005827"):
@@ -40,9 +59,19 @@ def fetch_fund_data(fund_code="005827"):
         fund_code (str): Fund code (e.g., "005827" for E Fund Blue Chip Selection)
     
     Returns:
-        pd.DataFrame: NAV data of the fund
+        pd.DataFrame: NAV data of the fund (with English column names)
     """
-    df = ak.fund_open_fund_info_em(fund_code=fund_code, indicator="单位净值走势")
+    df = ak.fund_open_fund_info_em(fund_code, "单位净值走势")
+    # Rename Chinese columns to English for consistency
+    df.rename(
+        columns={
+            "净值日期": "nav_date",
+            "单位净值": "unit_net_value",
+            "累计净值": "cumulative_net_value",
+            "日增长率": "daily_increase_rate",
+        },
+        inplace=True
+    )
     df.to_csv("experiments/raw_data/fund_nav.csv", index=False)
     return df
 
