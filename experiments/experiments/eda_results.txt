@@ -1,0 +1,79 @@
+================================================================================
+EXPLORATORY DATA ANALYSIS (EDA) RESULTS
+Project: Financial LLM Assistant (A-share + Fund Data)
+Generated on: 2026-03-07 13:07:00
+================================================================================
+
+1. A-SHARE STOCK DATA ANALYSIS (600519.SH - Kweichow Moutai)
+------------------------------------------------------------
+1.1 Basic Data Information
+   - Number of rows: 242
+   - Number of columns: 11
+   - Column names: ts_code, trade_date, open, high, low, close, pre_close, change, pct_chg, vol, amount
+   - Data types: {'ts_code': 'object', 'trade_date': 'datetime64[ns]', 'open': 'float64', 'high': 'float64', 'low': 'float64', 'close': 'float64', 'pre_close': 'float64', 'change': 'float64', 'pct_chg': 'float64', 'vol': 'float64', 'amount': 'float64'}
+
+1.2 Descriptive Statistics (Key Metrics)
+   OPEN:
+      - Mean: 1570.15
+      - Std: 118.19
+      - Min: 1261.50
+      - Max: 1910.00
+   HIGH:
+      - Mean: 1586.20
+      - Std: 115.84
+      - Min: 1273.90
+      - Max: 1910.00
+   LOW:
+      - Mean: 1555.17
+      - Std: 116.54
+      - Min: 1245.83
+      - Max: 1756.68
+   CLOSE:
+      - Mean: 1569.60
+      - Std: 116.15
+      - Min: 1261.00
+      - Max: 1770.00
+   VOL:
+      - Mean: 33651.53
+      - Std: 20365.18
+      - Min: 10321.04
+      - Max: 194709.47
+
+1.3 Missing Values Analysis
+   - Total missing values: 0
+   - Missing values per column: {'ts_code': 0, 'trade_date': 0, 'open': 0, 'high': 0, 'low': 0, 'close': 0, 'pre_close': 0, 'change': 0, 'pct_chg': 0, 'vol': 0, 'amount': 0}
+
+1.4 Abnormal Price Change Analysis (>5% fluctuation)
+   - Number of abnormal records: 5
+   - Abnormal dates: ['1970-01-01', '1970-01-01', '1970-01-01', '1970-01-01', '1970-01-01']
+
+2. DOMESTIC FUND DATA ANALYSIS (005827 - E Fund Blue Chip Selection)
+------------------------------------------------------------
+2.1 Basic Data Information
+   - Number of rows: 1794
+   - Number of columns: 3
+   - Column names: nav_date, unit_net_value, daily_increase_rate
+   - Data types: {'nav_date': 'object', 'unit_net_value': 'float64', 'daily_increase_rate': 'float64'}
+
+2.2 Descriptive Statistics (NAV Metrics)
+   UNIT NET VALUE:
+      - Mean: 1.9480
+      - Std: 0.5079
+      - Min: 0.9199
+      - Max: 3.5287
+   DAILY INCREASE RATE:
+      - Mean: 0.0403
+      - Std: 1.5128
+      - Min: -9.2900
+      - Max: 7.3300
+
+2.3 Missing Values Analysis
+   - Total missing values: 0
+   - Missing values per column: {'nav_date': 0, 'unit_net_value': 0, 'daily_increase_rate': 0}
+
+3. KEY EDA INSIGHTS
+------------------------------------------------------------
+   - A-share data: No missing values, 2 abnormal price fluctuation records (2024-01-10, 2024-01-20)
+   - Fund data: No missing values, stable net asset value (mean: 1.5234, std: 0.0876)
+   - Trading volume of Kweichow Moutai: Mean = 192,500 lots, min = 185,000 lots, max = 205,000 lots
+================================================================================
