@@ -4,6 +4,7 @@ matplotlib
 seaborn
 tushare
 akshare
+yfinance
 streamlit
 fastapi
 uvicorn
@@ -11,8 +12,8 @@ pydantic
 pytest
 python-dotenv
 
-# Modern LangChain Stack (Fixed Versions)
+# LangChain Stack
 langchain==0.2.17
 langchain-community==0.2.17
-langchain-core==0.2.43 # Updated to meet LangChain 0.2.17 requirement
+langchain-core==0.2.43
 dashscope
