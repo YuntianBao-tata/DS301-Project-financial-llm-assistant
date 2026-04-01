@@ -1,18 +1,18 @@
-# Core frameworks
-langchain>=0.1.0
-fastapi>=0.104.1
-streamlit>=1.28.2
-uvicorn>=0.24.0
+pandas
+numpy
+matplotlib
+seaborn
+tushare
+akshare
+streamlit
+fastapi
+uvicorn
+pydantic
+pytest
+python-dotenv
 
-# Data processing
-pandas==2.2.2  # Compatible with streamlit <3.0
-numpy>=1.26.2
-matplotlib>=3.8.2
-requests>=2.31.0
-
-# Financial data APIs
-tushare==1.2.89
-akshare>=1.10.93
-
-# Environment variables
-python-dotenv>=1.0.0
+# Modern LangChain Stack (Fixed Versions)
+langchain==0.2.17
+langchain-community==0.2.17
+langchain-core==0.2.43 # Updated to meet LangChain 0.2.17 requirement
+dashscope
