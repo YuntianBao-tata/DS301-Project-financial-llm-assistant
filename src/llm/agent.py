@@ -16,10 +16,10 @@ from src.tools.validation_tools import validate_stock_code, validate_fund_code
 
 load_dotenv(dotenv_path='api_keys.env')
 
-def create_agent():
+def create_agent(model_name: str = "qwen-plus"):
     try:
         llm = ChatTongyi(
-            model="qwen-plus",
+            model=model_name,
             temperature=0.3,
             api_key=os.getenv("DASHSCOPE_API_KEY")
         )
@@ -29,20 +29,25 @@ def create_agent():
 
     tools = [
         calculate_expression,
-        validate_stock_code, validate_fund_code,
-        query_stock_price, query_stock_valuation,
-        fetch_stock_history_data, fetch_fund_history_data,
+        validate_stock_code,
+        validate_fund_code,
+        query_stock_price,
+        query_stock_valuation,
+        fetch_stock_history_data,
+        fetch_fund_history_data,
         generate_price_chart
     ]
 
+    system_message = """You are a Senior Financial Analyst AI.
+    1. VISUAL INPUT: If the user provides an image (e.g., a chart), analyze it first. Identify the trend or pattern.
+    2. DATA ACCURACY: Do NOT rely solely on the image for specific numbers (prices/PE) as images may be outdated. Use tools to verify current data if the user asks for specific metrics.
+    3. CHARTING: For 'trends' or 'last N days', use 'fetch_stock_history_data' and 'generate_price_chart'.
+    4. TOOLS: Always validate codes before querying."""
+
+    # We use a specific placeholder name 'chat_history'
     prompt = ChatPromptTemplate.from_messages([
-        ("system", """You are a Senior Financial Analyst.
-        1. For 'trends', 'charts', or 'last N days': 
-           - Use 'fetch_stock_history_data' or 'fetch_fund_history_data' first.
-           - Then use 'generate_price_chart' to visualize.
-        2. For specific metrics (PE, PB), use the specific tools.
-        3. Always validate codes before use."""),
-        MessagesPlaceholder("chat_history"),
+        ("system", system_message),
+        MessagesPlaceholder(variable_name="chat_history"),
         ("human", "{input}"),
         MessagesPlaceholder(variable_name="agent_scratchpad"),
     ])
