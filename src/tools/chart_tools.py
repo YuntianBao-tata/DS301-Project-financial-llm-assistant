@@ -16,16 +16,31 @@ def generate_price_chart(data_json: str, title: str = "Price Trend") -> str:
     """
     try:
         data = json.loads(data_json)
+        
+        # --- FIX 1: Check if data list is empty ---
+        if not data:
+            return "Error: No data provided to generate chart."
+
         df = pd.DataFrame(data)
         
+        # --- FIX 2: Check for required columns ---
+        if 'close' not in df.columns:
+            return "Error: 'close' price column missing in data."
+            
+        date_col = None
         if 'trade_date' in df.columns:
-            df['date'] = pd.to_datetime(df['trade_date'])
+            date_col = 'trade_date'
         elif 'date' in df.columns:
-            df['date'] = pd.to_datetime(df['date'])
+            date_col = 'date'
         else:
             return "Error: Date column missing."
 
+        df['date'] = pd.to_datetime(df[date_col])
         df = df.set_index('date').sort_index()
+
+        # --- FIX 3: Ensure we have data points to plot ---
+        if len(df) == 0:
+            return "Error: No valid data points to plot."
 
         plt.figure(figsize=(10, 4))
         plt.plot(df.index, df['close'], label='Close Price', color='#1f77b4', linewidth=2)
@@ -47,5 +62,7 @@ def generate_price_chart(data_json: str, title: str = "Price Trend") -> str:
         graphic = base64.b64encode(image_png).decode('utf-8')
         return f"data:image/png;base64,{graphic}"
         
+    except json.JSONDecodeError:
+        return "Error: Invalid JSON format provided."
     except Exception as e:
         return f"Chart Error: {str(e)}"

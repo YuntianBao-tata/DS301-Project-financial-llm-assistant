@@ -61,16 +61,34 @@ def compare_stocks(ts_codes: str) -> str:
         comparison_data = []
         
         for code in codes:
-            # Get daily valuation data (PE, PB, total_mv)
-            df = pro.daily_basic(ts_code=code, trade_date='', fields='ts_code,trade_date,pe,pb,total_mv')
-            
-            if df is not None and not df.empty:
-                latest = df.iloc[0]
+            try:
+                # Get daily valuation data
+                df = pro.daily_basic(ts_code=code, trade_date='', fields='ts_code,trade_date,pe,pb,total_mv')
+                
+                # --- FIX: Check if dataframe is not empty before accessing iloc[0] ---
+                if df is not None and not df.empty:
+                    latest = df.iloc[0]
+                    comparison_data.append({
+                        'Code': code,
+                        'PE': f"{latest['pe']:.2f}",
+                        'PB': f"{latest['pb']:.2f}",
+                        'Market_Cap_B': f"{latest['total_mv']/100000000:.2f}"
+                    })
+                else:
+                    # Fallback if no data is returned
+                    comparison_data.append({
+                        'Code': code,
+                        'PE': "N/A",
+                        'PB': "N/A",
+                        'Market_Cap_B': "N/A"
+                    })
+            except Exception as inner_e:
+                # Handle individual stock errors gracefully
                 comparison_data.append({
                     'Code': code,
-                    'PE': f"{latest['pe']:.2f}",
-                    'PB': f"{latest['pb']:.2f}",
-                    'Market_Cap_B': f"{latest['total_mv']/100000000:.2f}"
+                    'PE': "Error",
+                    'PB': "Error",
+                    'Market_Cap_B': "Error"
                 })
         
         if not comparison_data:

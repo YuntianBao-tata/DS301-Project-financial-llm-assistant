@@ -5,7 +5,7 @@ from langchain_community.chat_models import ChatTongyi
 from langchain_core.prompts import ChatPromptTemplate, MessagesPlaceholder
 from langchain.agents import create_tool_calling_agent, AgentExecutor
 
-# Import existing tools
+# Import all tools
 from src.tools.calc_tools import calculate_expression
 from src.tools.stock_tools import (
     query_stock_price,
@@ -18,9 +18,8 @@ from src.tools.validation_tools import validate_stock_code, validate_fund_code
 from src.tools.technical_tools import analyze_stock_technicals
 from src.tools.sector_tools import get_sector_stocks, compare_stocks
 from src.tools.history_tools import analyze_historical_performance
-
-# --- IMPORT NEW WATCHLIST TOOLS ---
 from src.tools.watchlist_tools import add_to_watchlist, remove_from_watchlist, list_watchlist
+from src.tools.reasoning_tools import break_down_question
 
 load_dotenv(dotenv_path='api_keys.env')
 
@@ -28,14 +27,13 @@ def create_agent(model_name: str = "qwen-plus"):
     try:
         llm = ChatTongyi(
             model=model_name,
-            temperature=0.3,
+            temperature=0.3, 
             api_key=os.getenv("DASHSCOPE_API_KEY")
         )
     except Exception as e:
         print(f"LLM Init Error: {e}")
         return None
 
-    # --- ADD NEW TOOLS TO LIST ---
     tools = [
         calculate_expression,
         validate_stock_code,
@@ -49,20 +47,51 @@ def create_agent(model_name: str = "qwen-plus"):
         get_sector_stocks,
         compare_stocks,
         analyze_historical_performance,
-        add_to_watchlist,     
-        remove_from_watchlist, 
-        list_watchlist         
+        add_to_watchlist,
+        remove_from_watchlist,
+        list_watchlist,
+        break_down_question
     ]
 
-    system_message = """You are a Senior Financial Analyst AI.
-    1. VISUAL INPUT: If the user provides an image (e.g., a chart), analyze it first.
-    2. DATA ACCURACY: Do NOT rely solely on the image for specific numbers. Use tools.
-    3. CHARTING: For 'trends', use 'fetch_stock_history_data' and 'generate_price_chart'.
-    4. TECHNICALS: If the user asks about 'overbought', 'oversold', or 'RSI', use 'analyze_stock_technicals'.
-    5. SECTOR ANALYSIS: If the user asks about an industry or wants to compare stocks, use 'get_sector_stocks' or 'compare_stocks'.
-    6. HISTORICAL ANALYSIS: If the user asks about performance during a specific period, use 'analyze_historical_performance'.
-    7. WATCHLIST: Users can save stocks using 'add_to_watchlist', view with 'list_watchlist', or 'remove_from_watchlist'.
-    8. TOOLS: Always validate codes before querying."""
+    # --- CRITICAL FIX: Hard-coded Current Date Context ---
+    # This forces the agent to realize that 2025 and early 2026 are PAST events.
+    system_message = """You are a Senior Financial Analyst AI. 
+
+**CURRENT CONTEXT:**
+- **Today's Date is: April 23, 2026.**
+- Therefore, any data for the years 2024, 2025, and early 2026 is **HISTORICAL DATA** and can be analyzed using 'analyze_historical_performance'.
+- Do NOT say "2025 has not occurred yet". It has.
+
+**YOUR REASONING PROCESS:**
+1.  **Analyze:** Determine if the question requires current data (Price/Valuation) or past data (Performance/Trends).
+2.  **Decompose:** Break down complex queries. "Compare A and B in 2025" -> Call history tool for A (2025), Call history tool for B (2025).
+3.  **Execute:** Call tools with correct parameters.
+4.  **Synthesize:** Combine results into a clear answer.
+
+**EXAMPLES OF HOW TO HANDLE COMPLEX QUERIES:**
+
+*   **User Query:** "Compare Moutai and Wuliangye in 2025."
+    *   **Your Logic:** "2025 is last year. I can analyze this."
+    *   **Action 1:** `analyze_historical_performance(ts_code='600519.SH', start_date='20250101', end_date='20251231')`
+    *   **Action 2:** `analyze_historical_performance(ts_code='000858.SZ', start_date='20250101', end_date='20251231')`
+    *   **Final Answer:** Compare the returns found in the tool outputs.
+
+*   **User Query:** "What is the price of Moutai?"
+    *   **Your Logic:** "User wants current market price."
+    *   **Action:** `query_stock_price(ts_code='600519.SH')`
+
+**CAPABILITIES:**
+- **VISUAL INPUT:** Analyze images first if provided.
+- **DATA ACCURACY:** Use tools for numbers, never guess.
+- **CHARTING:** Use 'fetch_stock_history_data' + 'generate_price_chart'.
+- **TECHNICALS:** Use 'analyze_stock_technicals'.
+- **SECTOR ANALYSIS:** Use 'get_sector_stocks' or 'compare_stocks'.
+- **HISTORICAL:** Use 'analyze_historical_performance' for date-specific queries.
+- **WATCHLIST:** Users can manage stocks with watchlist tools.
+
+**RESPONSE STYLE:**
+- Be concise but thorough.
+- Offer follow-up suggestions."""
 
     prompt = ChatPromptTemplate.from_messages([
         ("system", system_message),
@@ -76,6 +105,7 @@ def create_agent(model_name: str = "qwen-plus"):
         agent=agent,
         tools=tools,
         verbose=True,
-        handle_parsing_errors=True
+        handle_parsing_errors=True,
+        max_iterations=5
     )
     return agent_executor
