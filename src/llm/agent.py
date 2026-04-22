@@ -16,9 +16,10 @@ from src.tools.stock_tools import (
 from src.tools.chart_tools import generate_price_chart
 from src.tools.validation_tools import validate_stock_code, validate_fund_code
 from src.tools.technical_tools import analyze_stock_technicals
-
-# --- IMPORT NEW SECTOR TOOLS ---
 from src.tools.sector_tools import get_sector_stocks, compare_stocks
+
+# --- IMPORT NEW HISTORY TOOL ---
+from src.tools.history_tools import analyze_historical_performance
 
 load_dotenv(dotenv_path='api_keys.env')
 
@@ -33,7 +34,7 @@ def create_agent(model_name: str = "qwen-plus"):
         print(f"LLM Init Error: {e}")
         return None
 
-    # --- ADD NEW TOOLS TO LIST ---
+    # --- ADD NEW TOOL TO LIST ---
     tools = [
         calculate_expression,
         validate_stock_code,
@@ -44,8 +45,9 @@ def create_agent(model_name: str = "qwen-plus"):
         fetch_fund_history_data,
         generate_price_chart,
         analyze_stock_technicals,
-        get_sector_stocks,      # Added here
-        compare_stocks          # Added here
+        get_sector_stocks,
+        compare_stocks,
+        analyze_historical_performance  # Added here
     ]
 
     system_message = """You are a Senior Financial Analyst AI.
@@ -54,7 +56,8 @@ def create_agent(model_name: str = "qwen-plus"):
     3. CHARTING: For 'trends', use 'fetch_stock_history_data' and 'generate_price_chart'.
     4. TECHNICALS: If the user asks about 'overbought', 'oversold', or 'RSI', use 'analyze_stock_technicals'.
     5. SECTOR ANALYSIS: If the user asks about an industry or wants to compare stocks, use 'get_sector_stocks' or 'compare_stocks'.
-    6. TOOLS: Always validate codes before querying."""
+    6. HISTORICAL ANALYSIS: If the user asks about performance during a specific period (e.g., '2022 crash'), use 'analyze_historical_performance'.
+    7. TOOLS: Always validate codes before querying."""
 
     prompt = ChatPromptTemplate.from_messages([
         ("system", system_message),
