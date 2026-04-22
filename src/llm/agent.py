@@ -17,9 +17,10 @@ from src.tools.chart_tools import generate_price_chart
 from src.tools.validation_tools import validate_stock_code, validate_fund_code
 from src.tools.technical_tools import analyze_stock_technicals
 from src.tools.sector_tools import get_sector_stocks, compare_stocks
-
-# --- IMPORT NEW HISTORY TOOL ---
 from src.tools.history_tools import analyze_historical_performance
+
+# --- IMPORT NEW WATCHLIST TOOLS ---
+from src.tools.watchlist_tools import add_to_watchlist, remove_from_watchlist, list_watchlist
 
 load_dotenv(dotenv_path='api_keys.env')
 
@@ -34,7 +35,7 @@ def create_agent(model_name: str = "qwen-plus"):
         print(f"LLM Init Error: {e}")
         return None
 
-    # --- ADD NEW TOOL TO LIST ---
+    # --- ADD NEW TOOLS TO LIST ---
     tools = [
         calculate_expression,
         validate_stock_code,
@@ -47,7 +48,10 @@ def create_agent(model_name: str = "qwen-plus"):
         analyze_stock_technicals,
         get_sector_stocks,
         compare_stocks,
-        analyze_historical_performance  # Added here
+        analyze_historical_performance,
+        add_to_watchlist,     
+        remove_from_watchlist, 
+        list_watchlist         
     ]
 
     system_message = """You are a Senior Financial Analyst AI.
@@ -56,8 +60,9 @@ def create_agent(model_name: str = "qwen-plus"):
     3. CHARTING: For 'trends', use 'fetch_stock_history_data' and 'generate_price_chart'.
     4. TECHNICALS: If the user asks about 'overbought', 'oversold', or 'RSI', use 'analyze_stock_technicals'.
     5. SECTOR ANALYSIS: If the user asks about an industry or wants to compare stocks, use 'get_sector_stocks' or 'compare_stocks'.
-    6. HISTORICAL ANALYSIS: If the user asks about performance during a specific period (e.g., '2022 crash'), use 'analyze_historical_performance'.
-    7. TOOLS: Always validate codes before querying."""
+    6. HISTORICAL ANALYSIS: If the user asks about performance during a specific period, use 'analyze_historical_performance'.
+    7. WATCHLIST: Users can save stocks using 'add_to_watchlist', view with 'list_watchlist', or 'remove_from_watchlist'.
+    8. TOOLS: Always validate codes before querying."""
 
     prompt = ChatPromptTemplate.from_messages([
         ("system", system_message),
