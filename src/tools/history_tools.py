@@ -69,5 +69,5 @@ def analyze_historical_performance(ts_code: str, start_date: str, end_date: str)
         return result
 
     except Exception as e:
-        # --- ROBUST FIX: Catch any other unexpected errors ---
+        # ---  Catch any other unexpected errors ---
         return f"Historical Analysis Error for {ts_code}: {str(e)}"

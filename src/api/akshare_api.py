@@ -35,5 +35,3 @@ def get_global_index(symbol: str):
     except Exception as e:
         return str(e)
 
-# --- REMOVED calculate_rsi and analyze_technicals ---
-# These have been moved to src/tools/technical_tools.py
