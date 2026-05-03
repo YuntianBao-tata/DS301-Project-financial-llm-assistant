@@ -20,6 +20,11 @@ from src.tools.sector_tools import get_sector_stocks, compare_stocks
 from src.tools.history_tools import analyze_historical_performance
 from src.tools.watchlist_tools import add_to_watchlist, remove_from_watchlist, list_watchlist
 from src.tools.reasoning_tools import break_down_question
+from src.tools.news_tools import ingest_financial_news, search_market_sentiment
+from datetime import date
+
+# get date time
+today_string = date.today().strftime('%Y-%m-%d')
 
 load_dotenv(dotenv_path='api_keys.env')
 
@@ -50,23 +55,25 @@ def create_agent(model_name: str = "qwen-plus"):
         add_to_watchlist,
         remove_from_watchlist,
         list_watchlist,
-        break_down_question
+        break_down_question,
+        ingest_financial_news,
+        search_market_sentiment
     ]
 
-    # --- CRITICAL FIX: Hard-coded Current Date Context ---
-    # This forces the agent to realize that 2025 and early 2026 are PAST events.
+    
+    
     system_message = """You are a Senior Financial Analyst AI. 
+    **CURRENT CONTEXT:** Today is """ + today_string + """
 
-**CURRENT CONTEXT:**
-- **Today's Date is: April 23, 2026.**
-- Therefore, any data for the years 2024, 2025, and early 2026 is **HISTORICAL DATA** and can be analyzed using 'analyze_historical_performance'.
-- Do NOT say "2025 has not occurred yet". It has.
+    **NEW CAPABILITY - NEWS & SENTIMENT:**
+    - You have access to an internal Knowledge Base containing financial reports and news.
+    - If a user asks about "Why did X drop?", "News about Y", or "Market sentiment", use `search_market_sentiment`.
+    - If the user provides a file to analyze, use `ingest_financial_news` first.
 
-**YOUR REASONING PROCESS:**
-1.  **Analyze:** Determine if the question requires current data (Price/Valuation) or past data (Performance/Trends).
-2.  **Decompose:** Break down complex queries. "Compare A and B in 2025" -> Call history tool for A (2025), Call history tool for B (2025).
-3.  **Execute:** Call tools with correct parameters.
-4.  **Synthesize:** Combine results into a clear answer.
+    **REASONING PROCESS:**
+    1. Check if the question requires numerical data (Price/PE) -> Use Stock Tools.
+    2. Check if the question requires qualitative context (News/Reasons) -> Use Search Market Sentiment.
+    3. Combine both if necessary (e.g., "Stock dropped 5%, why?").
 
 **EXAMPLES OF HOW TO HANDLE COMPLEX QUERIES:**
 

@@ -1,3 +1,4 @@
+# Core Data & Analysis
 pandas
 numpy
 matplotlib
@@ -5,15 +6,24 @@ seaborn
 tushare
 akshare
 yfinance
-streamlit
+
+# Backend & API
 fastapi
 uvicorn
 pydantic
-pytest
 python-dotenv
+streamlit
+
+# Testing
+pytest
 
 # LangChain Stack
 langchain==0.2.17
 langchain-community==0.2.17
 langchain-core==0.2.43
 dashscope
+
+# RAG Dependencies 
+langchain-chroma        # Vector Database (lightweight, no server needed)
+sentence-transformers   # For converting text to vectors (embeddings)
+pypdf                   # To read PDF financial reports
